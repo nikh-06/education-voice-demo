@@ -1,0 +1,10 @@
+python-dotenv
+langgraph
+langchain
+langchain-google-vertexai
+langchain-community
+faiss-cpu
+pydantic
+requests
+python-dotenv
+huggingface-hub 
