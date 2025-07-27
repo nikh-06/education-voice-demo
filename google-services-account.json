@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "axial-potential-467109-j3",
+  "private_key_id": "14e9f0c5e452014143b43e0862aa628e515048c7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/G0cSAS77mbmB\n3i0djqD96HUEhX+9lkb41VcJ+jAqO/TmZy2Q1T+hJRpyP7TGv0cf8XFBGBHsQq2N\nzVan8fX/GzqA1bhFSFSpDy5hpZ8DaEpHyy1J0CotZQ0bWNF8nFmqy5qYyM12gfq/\n8JCyxS2CN8fwQXl1Ve4pOT5WM45vZP9Lo1eL2bgyNGSjvP++aj0HP+7RZUBtAA1X\ntgv1mJOl9RUdJJQ5dH2h5c0dJcmn9lSITfy7dy7nLJrFkwKy4pl/v5r5fJi4ug4a\n4Dfy2h///NawmSWYaeDybREUpBLPEviwXJisggQ3a/dsFhF4A5oDAViOEYiPbZzD\nngIZ3Ve/AgMBAAECggEAAgp5b4fjgUL3hOg80bUW8A8+LK58s9qGgILN9Q8FQHY3\nQjyo2Z3SM6QQ5iNBbxWJqp3D+8UVIx5Lk/+bSzWqaGKMjrKszwSb1UBfWoickm2k\nzKNIi28oyPPsa2kL6uMQ+OHhKuK+Gv1kknP88tCbRB0MMOGQhmaRoajfiw3uGZXV\nGgo4HhstbfRBNzdbO6Uw/icK44PsM6TvCiLLJUroZ4/If5tGQ7/CLeId+mXNwOwF\nJH6earml/24l1oCSG+nRuAvvZQX6Ltd+dMvP/iQwIdL+952N1NwQvb2MRLXrxeOv\ngm1UWzC4u8pwUSqWQKdIVspDH6qNXUFtu/C2sux/8QKBgQDukcBD0Tl5W5hLw22r\nH4+73VQEWzLCKYA+pBuJq7eZY10JWcnwpokEzmDAdmwXrOzms1KzmgBv1XbnOkXn\n8cBGd1ygrJX/b0dQGcvKUAaC+fwLPrTs/5IGkGT3Hiuu0pDDtMS04j7Pg9famN8N\ndwxAFEU7RnRf/GynYcq0ke+pbwKBgQDNEcXniP5FX73LmbDKEUsAGvLjDVPrBKXH\np0Pdlseq5mN/+IvhtYNKk/zHaADIEELLUQbzDLzRnw/Wfj17bq4SahAnMfQ9U4Pl\nuuaQsYA6ceTab+iX1nB8tT9dklPIiCMI8Jsmt9YEDMyVhrHxXxoHWjuwTrf1QRx3\nyg0nHJzusQKBgAH74k5uEf1JXrXalTHkHEzipU03+O8Wa0OaF8SIUgmLgv2N6pj+\nuYr5sGJJWdLElF/CxABMWo6Tht6bZHNuVjv/yBxp8wFhyoUHAePX0IYMUCVDyzth\nULSPRNetP42/oIaQHUanzv/ox8XAmbJB+C8cPAsnJdaagcjOjmH8CLMvAoGBAKaS\nk0C5ZGERnedt1c6tMVDKkxSfVNUIF2kPku7BdTp6ncPrLiSO/jBr+N44urnHi5n/\nHTf71rwnCgRe0q4af0bx5GESEKRn3DGVGYfaxp+yuAQ+9p2vT/vcdbYaD/hJrLus\nRTq0BSGRC/VBTfUUHN5wCx/xMTgERY2AECL++PJhAoGAIa0v85YJymAGFizqQYEa\n0BmNdLtQNMm3XvPBR4o3ipb9aFJ10rjPh0er6EYY9n4BIsqhZO2TNvIIWwWncu2M\n/V61lIeRarZuaJNDaRzBtLzgiMQxPQxALoh4v9nJ9Z1YXVsq8/Z7+Oockw3Gk9G3\n6VwvT7LTnDfBh55Gb0YsIBo=\n-----END PRIVATE KEY-----\n",
+  "client_email": "shiksha-vani-deployment@axial-potential-467109-j3.iam.gserviceaccount.com",
+  "client_id": "107154292713992169764",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/shiksha-vani-deployment%40axial-potential-467109-j3.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
