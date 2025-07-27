@@ -47,7 +47,8 @@ def run_lesson_generation(initial_state: dict):
     for event in api_graph.stream(initial_state):
         for key, value in event.items():
             print(f"--- Finished Node: {key} ---")
-            final_state.update(value)
+            if value is not None and isinstance(value, dict):
+                final_state.update(value)
 
     end_time = time.time()
     print(f"✅ Background task finished in {end_time - start_time:.2f} seconds.")

@@ -9,8 +9,8 @@ from .state import GraphState, Intent, EvaluationReport
 from .utils import generate_image_with_fallback
 
 # --- Tool and Model Setup ---
-llm = ChatVertexAI(model_name="gemini-1.5-pro")
-tavily_tool = TavilySearchResults(max_results=3)
+llm = ChatVertexAI(model_name="gemini-2.5-pro")
+tavily_tool = TavilySearchResults(max_results=2)
 
 # --- Agent Node Definitions ---
 

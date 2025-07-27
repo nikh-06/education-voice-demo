@@ -36,7 +36,7 @@ def initialize_firebase():
     except ValueError:
         cred = credentials.Certificate("firebase-service-account.json")
         firebase_admin.initialize_app(cred, {
-            'databaseURL': 'https://agentic-ai-645f6-default-rtdb.firebaseio.com/' # IMPORTANT: Replace with your actual URL
+            'databaseURL': 'https://agentic-ai-11-default-rtdb.firebaseio.com/' # IMPORTANT: Replace with your actual URL
         })
         print("🔥 Firebase app initialized successfully.")
 
