@@ -5,13 +5,14 @@ from langchain.schema import Document
 from pydantic import BaseModel, Field
 
 # --- Pydantic Models for Structured Output ---
+
 class Intent(BaseModel):
-    # ... (rest of the class is unchanged)
+    """The structured output for the user's request."""
     topic: str = Field(description="The main subject or topic for the lesson plan.")
     grade_level: str = Field(description="The target grade level for the lesson.")
 
 class EvaluationReport(BaseModel):
-    # ... (rest of the class is unchanged)
+    """A structured evaluation of the generated educational content."""
     clarity_score: int = Field(description="Clarity score (1-5), is it easy to understand for the grade level?")
     clarity_feedback: str = Field(description="Qualitative feedback on clarity.")
     engagement_score: int = Field(description="Engagement score (1-5), is the analogy and content interesting?")
@@ -21,14 +22,39 @@ class EvaluationReport(BaseModel):
 
 
 # --- Graph State Definition ---
+
 class GraphState(TypedDict):
     """The state of the graph."""
-    # --- MODIFIED ---
-    user_uuid: str  # To identify the user for Firebase publishing
+    user_uuid: str
 
     # Input fields
     user_request: str
     topic: str
     grade_level: str
     retriever: object
-    # ... (rest of the state is unchanged)
+
+    # State for RAG and Reranking
+    retrieved_docs: List[Document]
+    grounded_content: str
+
+    # Content generation fields
+    supplemental_content: str
+    lesson_prompt: str
+    quiz_prompt: str
+
+    # Generated content fields
+    lesson_plan: str
+    compiled_lesson: str
+    quiz: str
+    verification_report: str
+    image_url: str
+
+    # Evaluation fields
+    evaluation_report: EvaluationReport
+
+    # Metadata fields
+    execution_time: float
+    error: str
+
+    # Control flow fields
+    compilation_complete: bool

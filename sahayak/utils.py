@@ -6,16 +6,14 @@ import sqlite3
 import speech_recognition as sr
 import requests
 from dotenv import load_dotenv
+import firebase_admin
+from firebase_admin import credentials, db
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_google_vertexai import VertexAIImageGeneratorChat
-
-import firebase_admin
-from firebase_admin import credentials, db
-
 
 # --- Environment Setup ---
 load_dotenv()
@@ -29,8 +27,20 @@ except Exception as e:
     print(f"⚠️ Vertex AI Image Generation not available: {e}. Using fallback.")
     image_generation_tool = None
 
-# --- Database and RAG Setup ---
+# --- Firebase Initialization ---
+def initialize_firebase():
+    """Initializes the Firebase Admin SDK."""
+    try:
+        firebase_admin.get_app()
+        print("🔥 Firebase app already initialized.")
+    except ValueError:
+        cred = credentials.Certificate("firebase-service-account.json")
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': 'https://agentic-ai-645f6-default-rtdb.firebaseio.com/' # IMPORTANT: Replace with your actual URL
+        })
+        print("🔥 Firebase app initialized successfully.")
 
+# --- Database and RAG Setup ---
 def setup_memory_database():
     """Initializes the SQLite database."""
     conn = sqlite3.connect(DB_PATH)
@@ -63,7 +73,6 @@ def setup_rag_pipeline(source_document_path: str):
     return vectorstore.as_retriever(search_kwargs={'k': 10})
 
 # --- Image Generation ---
-
 def generate_image_with_fallback(prompt: str) -> str:
     """Generates an image using Vertex AI with a Hugging Face fallback."""
     if image_generation_tool:
@@ -100,7 +109,6 @@ def generate_image_with_fallback(prompt: str) -> str:
     return "No image generated."
 
 # --- Voice Input ---
-
 def listen_for_voice_command(language="en-IN"):
     """Listens for a voice command and transcribes it."""
     r = sr.Recognizer()
@@ -121,17 +129,3 @@ def listen_for_voice_command(language="en-IN"):
         except sr.RequestError as e:
             print(f"❌ Recognition service error; {e}")
     return None
-
-def initialize_firebase():
-    """Initializes the Firebase Admin SDK."""
-    try:
-        # Check if the app is already initialized
-        firebase_admin.get_app()
-        print("🔥 Firebase app already initialized.")
-    except ValueError:
-        # Initialize the app if not already done
-        cred = credentials.Certificate("firebase-service-account.json")
-        firebase_admin.initialize_app(cred, {
-            'databaseURL': 'YOUR_FIREBASE_DATABASE_URL' # IMPORTANT: Replace with your actual URL
-        })
-        print("🔥 Firebase app initialized successfully.")

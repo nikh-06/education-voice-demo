@@ -29,8 +29,7 @@ def startup_event():
         print("✅ RAG pipeline retriever is ready.")
     except Exception as e:
         print(f"❌ Critical startup error: {e}")
-        # In a real app, you might want to exit if setup fails
-        # sys.exit(1)
+        sys.exit(1)
 
 # --- Request Model ---
 class LessonRequest(BaseModel):

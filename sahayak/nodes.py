@@ -1,14 +1,12 @@
 # sahayak/nodes.py
 
 import datetime
-import os
-import sqlite3
-
+from firebase_admin import db
 from langchain_google_vertexai import ChatVertexAI
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 from .state import GraphState, Intent, EvaluationReport
-from .utils import generate_image_with_fallback, DB_PATH
+from .utils import generate_image_with_fallback
 
 # --- Tool and Model Setup ---
 llm = ChatVertexAI(model_name="gemini-1.5-pro")
@@ -62,11 +60,19 @@ def llm_reranker_node(state: GraphState):
 
         print(f"✅ Reranker selected {len(reranked_docs_text)} documents.")
         grounded_content = "\n\n---\n\n".join(reranked_docs_text)
+
+        topic_check_prompt = f"Analyze if the following text contains substantial information about '{topic}'. The text is a curated selection of source material. Return ONLY 'yes' or 'no'."
+        has_topic = llm.invoke(topic_check_prompt).content.lower().strip()
+
+        if has_topic != "yes":
+            return {"error": f"I apologize, but I don't have enough reliable information about '{topic}' in my source material to create a lesson."}
+
         return {"grounded_content": grounded_content}
     except Exception as e:
         return {"error": f"Failed during the reranking process: {e}"}
 
 def creative_assistant_node(state: GraphState):
+    """Generates a culturally relevant analogy for the lesson."""
     print("---NODE: CREATIVE ASSISTANT---")
     topic, grade = state["topic"], state["grade_level"]
     query = llm.invoke(f"Generate a search query for culturally relevant analogies to teach '{topic}' to {grade} students in India.").content.strip()
@@ -76,47 +82,102 @@ def creative_assistant_node(state: GraphState):
     return {"supplemental_content": synthesis}
 
 def enhanced_prompt_composer_node(state: GraphState):
+    """Creates the final prompts for the lesson and quiz generators."""
     print("---NODE: ENHANCED PROMPT COMPOSER---")
-    # This node remains the same as in the original file
-    # ... (code omitted for brevity, it's unchanged) ...
-    return {"lesson_prompt": "...", "quiz_prompt": "..."} # Placeholder
+    grounded_content, supplemental_content, topic, grade_level = state["grounded_content"], state["supplemental_content"], state["topic"], state["grade_level"]
+
+    lesson_prompt = f"""Create a lesson plan about '{topic}'.
+Primary Source Material (Facts):
+---
+{grounded_content}
+---
+Creative Element (Analogy):
+---
+{supplemental_content}
+---
+Task: Create a detailed lesson plan for {grade_level} with the following structure:
+1. Topic
+2. Target Grade ({grade_level})
+3. Objectives
+4. Materials
+5. Introduction (incorporate the creative analogy)
+6. Activities
+7. Assessment
+Important Guidelines:
+- Use only facts explicitly stated in the source material.
+- Maintain professional, academic language.
+- Format in clean markdown.
+- Start directly with the topic, no introductory text."""
+
+    quiz_prompt = f"""Create a worksheet about '{topic}' for {grade_level}.
+Primary Source Material:
+---
+{grounded_content}
+---
+Requirements:
+- Create 3-4 questions appropriate for a {grade_level} understanding.
+- Include an answer key.
+- Base all questions strictly on the source material.
+- Format in clean markdown.
+- Start directly with the worksheet title."""
+
+    return {"lesson_prompt": lesson_prompt, "quiz_prompt": quiz_prompt}
 
 def lesson_generator_node(state: GraphState):
+    """Generates the lesson plan from the prompt."""
     print("---NODE: LESSON GENERATOR---")
-    # This node remains the same as in the original file
-    # ... (code omitted for brevity, it's unchanged) ...
-    return {"lesson_plan": "..."} # Placeholder
+    lesson_plan = llm.invoke(state['lesson_prompt']).content
+    return {"lesson_plan": lesson_plan}
 
 def quiz_generator_node(state: GraphState):
+    """Generates the quiz from the prompt."""
     print("---NODE: QUIZ GENERATOR---")
-    # This node remains the same as in the original file
-    # ... (code omitted for brevity, it's unchanged) ...
-    return {"quiz": "..."} # Placeholder
+    quiz = llm.invoke(state['quiz_prompt']).content
+    return {"quiz": quiz}
 
 def image_generator_node(state: GraphState):
+    """Generates a visual aid for the lesson."""
     print("---NODE: IMAGE GENERATOR---")
     try:
         return {"image_url": generate_image_with_fallback(f"Educational diagram about {state['topic']}.")}
-    except Exception:
+    except Exception as e:
+        print(f"⚠️ Image generation failed: {e}")
         return {"image_url": "No image generated."}
 
 def hallucination_guard_node(state: GraphState):
+    """Fact-checks the lesson plan against the source material."""
     print("---NODE: HALLUCINATION GUARD---")
-    # This node remains the same as in the original file
-    # ... (code omitted for brevity, it's unchanged) ...
-    return {"verification_report": "..."} # Placeholder
+    verification_prompt = f"Fact-check the 'Lesson Plan' against the 'Source Text'. If all claims are supported, respond with 'All claims verified.'. Otherwise, list unsupported claims.\n\nSource Text:\n{state['grounded_content']}\n\nLesson Plan:\n{state['lesson_plan']}"
+    report = llm.invoke(verification_prompt).content
+    return {"verification_report": report}
 
 def final_compiler_node(state: GraphState):
+    """Compiles the final lesson plan with the image URL."""
     print("---NODE: FINAL COMPILER---")
-    # This node remains the same as in the original file
-    # ... (code omitted for brevity, it's unchanged) ...
-    return {"compilation_complete": True, "compiled_lesson": "..."} # Placeholder
+    if state.get("error") or not all(state.get(k) for k in ["lesson_plan", "quiz", "image_url", "verification_report"]):
+        return {} # Don't compile if there's an error or missing data
+
+    compiled_lesson = state['lesson_plan']
+    if state['image_url'] and state['image_url'] != "No image generated.":
+        visual_aid_section = f"\n\n### Visual Aid Suggestion\n\n![{state['topic']}]({state['image_url']})\n"
+        compiled_lesson += visual_aid_section
+    return {"compilation_complete": True, "compiled_lesson": compiled_lesson}
 
 def evaluation_agent_node(state: GraphState):
+    """Assesses the generated content against a rubric."""
     print("---NODE: EVALUATION AGENT---")
-    # This node remains the same as in the original file
-    # ... (code omitted for brevity, it's unchanged) ...
-    return {"evaluation_report": EvaluationReport(...)} # Placeholder
+    if not state.get("compilation_complete"):
+        return {}
+
+    evaluator_llm = llm.with_structured_output(EvaluationReport)
+    prompt = f"You are an expert curriculum reviewer. Evaluate the following educational content for {state['grade_level']} students based on: 1. Clarity, 2. Engagement, 3. Educational Value. Provide a score (1-5) and concise feedback for each.\n\n**Lesson Plan:**\n{state.get('compiled_lesson')}\n\n**Quiz:**\n{state.get('quiz')}"
+
+    try:
+        report = evaluator_llm.invoke(prompt)
+        print(f"✅ Evaluation Complete: Clarity={report.clarity_score}/5")
+        return {"evaluation_report": report}
+    except Exception as e:
+        return {"error": f"Failed to generate evaluation report: {e}"}
 
 def firebase_publish_node(state: GraphState):
     """Publishes the final lesson plan to Firebase Realtime Database."""
