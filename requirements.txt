@@ -1,10 +1,27 @@
-python-dotenv
-langgraph
+# requirements.txt
+
+# Core LangChain & LangGraph
 langchain
 langchain-google-vertexai
+langgraph
 langchain-community
-faiss-cpu
 pydantic
-requests
+
+# API & Background Tasks
+fastapi
+uvicorn[standard]
+
+# Firebase Integration
+firebase-admin
+
+# RAG & Embeddings
+faiss-cpu
+sentence-transformers
+langchain-text-splitters
+pypdf
+
+# Other Tools
 python-dotenv
-huggingface-hub 
+tavily-python
+requests
+SpeechRecognition

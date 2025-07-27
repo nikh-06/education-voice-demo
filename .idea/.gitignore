@@ -1,0 +1,15 @@
+# .gitignore
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# Secrets
+firebase-service-account.json
+
+# IDE
+.idea/
+.vscode/
